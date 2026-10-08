@@ -1,0 +1,452 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Digital Coding | منصة ديجيتال كودينج</title>
+
+    <!-- Tailwind CSS & FontAwesome -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+
+    <style>
+        body { font-family: 'Cairo', sans-serif; background-color: #f8fafc; color: #0f172a; }
+        .code-font { font-family: 'JetBrains Mono', monospace; }
+
+        .dc-card {
+            background: #ffffff;
+            border: 1px solid #e2e8f0;
+            box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.05);
+        }
+
+        .dc-input {
+            background: #f1f5f9;
+            border: 1px solid #cbd5e1;
+            color: #0f172a;
+            transition: all 0.2s;
+        }
+        .dc-input:focus {
+            background: #ffffff;
+            border-color: #2563eb;
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
+            outline: none;
+        }
+
+        .code-block {
+            background: #0f172a;
+            color: #38bdf8;
+            border-radius: 12px;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col justify-between select-none">
+
+    <!-- Header Navbar -->
+    <header class="w-full bg-white border-b border-slate-200 sticky top-0 z-30 px-4 py-3">
+        <div class="max-w-6xl mx-auto flex justify-between items-center">
+            
+            <!-- Logo & Brand Image -->
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-xl bg-blue-600 flex items-center justify-center text-white shadow-md shadow-blue-500/20">
+                    <svg class="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                        <polyline points="16 18 22 12 16 6"></polyline>
+                        <polyline points="8 6 2 12 8 18"></polyline>
+                    </svg>
+                </div>
+                <div>
+                    <h1 class="font-black text-xl text-slate-900 tracking-tight flex items-center gap-2">
+                        Digital Coding <span class="text-[10px] bg-blue-50 text-blue-600 border border-blue-200 px-2 py-0.5 rounded-full code-font">v2.0</span>
+                    </h1>
+                    <p class="text-[11px] text-slate-500">المنصة الشاملة لنشر وتبادل الأكواد البرمجية</p>
+                </div>
+            </div>
+
+            <!-- User Auth Controls -->
+            <div id="navUserArea" class="flex items-center gap-3">
+                <button onclick="showAuthModal('login')" class="text-xs font-bold bg-slate-100 hover:bg-slate-200 text-slate-700 px-4 py-2 rounded-xl border border-slate-300 transition">
+                    تسجيل الدخول
+                </button>
+                <button onclick="showAuthModal('register')" class="text-xs font-bold bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-xl shadow-sm transition">
+                    حساب جديد
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Platform Body -->
+    <main class="max-w-5xl w-full mx-auto p-4 flex-1 space-y-6">
+
+        <!-- Banner Card -->
+        <div class="dc-card rounded-3xl p-6 md:p-8 flex flex-col md:flex-row items-center justify-between gap-6 bg-gradient-to-r from-blue-50 via-indigo-50 to-white border-blue-100">
+            <div class="space-y-2 text-center md:text-right">
+                <span class="text-xs font-bold bg-blue-600/10 text-blue-700 px-3 py-1 rounded-full code-font">SECURITY PROTECTED ⚡</span>
+                <h2 class="text-2xl md:text-3xl font-black text-slate-900">مرحباً بك في منصة Digital Coding</h2>
+                <p class="text-xs md:text-sm text-slate-600">انشر سكريبتاتك، شارك أكوادك بلغات مختلفة، واستفد من حماية الحسابات المتقدمة.</p>
+            </div>
+            
+            <button onclick="openPublishModal()" class="bg-blue-600 hover:bg-blue-700 text-white font-bold px-6 py-3.5 rounded-2xl text-xs flex items-center gap-2 shadow-lg shadow-blue-600/20 transition shrink-0">
+                <i class="fa-solid fa-plus"></i> نشر كود جديد
+            </button>
+        </div>
+
+        <!-- Filter & Search Bar -->
+        <div class="flex flex-col md:flex-row gap-3 justify-between items-center">
+            <div class="w-full md:w-96 relative">
+                <i class="fa-solid fa-magnifying-glass absolute right-3.5 top-3.5 text-slate-400 text-xs"></i>
+                <input type="text" id="searchInput" oninput="renderPosts()" placeholder="ابحث عن كود، بلغة البرمجة أو العنوان..." class="w-full dc-input rounded-xl pr-10 pl-4 py-2.5 text-xs">
+            </div>
+
+            <div class="flex items-center gap-2 overflow-x-auto w-full md:w-auto pb-1">
+                <button onclick="filterLang('ALL')" class="text-xs font-bold px-3 py-1.5 rounded-lg border bg-blue-600 text-white border-blue-600 filter-btn">الكل</button>
+                <button onclick="filterLang('JavaScript')" class="text-xs font-bold px-3 py-1.5 rounded-lg border bg-white text-slate-600 border-slate-300 hover:bg-slate-50 filter-btn">JavaScript</button>
+                <button onclick="filterLang('Python')" class="text-xs font-bold px-3 py-1.5 rounded-lg border bg-white text-slate-600 border-slate-300 hover:bg-slate-50 filter-btn">Python</button>
+                <button onclick="filterLang('HTML/CSS')" class="text-xs font-bold px-3 py-1.5 rounded-lg border bg-white text-slate-600 border-slate-300 hover:bg-slate-50 filter-btn">HTML/CSS</button>
+            </div>
+        </div>
+
+        <!-- Feed Section -->
+        <div id="postsFeed" class="space-y-4">
+            <!-- Feed Posts Will Be Rendered Dynamically -->
+        </div>
+
+    </main>
+
+    <!-- Auth Modal (Login / Register) -->
+    <div id="authModal" class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm hidden flex items-center justify-center p-4 z-50">
+        <div class="dc-card max-w-md w-full rounded-3xl p-6 space-y-4 relative animate-fade-in">
+            <button onclick="closeAuthModal()" class="absolute left-4 top-4 text-slate-400 hover:text-slate-600"><i class="fa-solid fa-xmark text-lg"></i></button>
+
+            <div class="text-center space-y-1">
+                <h3 id="authTitle" class="text-xl font-black text-slate-900">تسجيل الدخول</h3>
+                <p id="authSubtitle" class="text-xs text-slate-500">أدخل بياناتك للمتابعة في Digital Coding</p>
+            </div>
+
+            <form id="authForm" onsubmit="handleAuth(event)" class="space-y-3">
+                <div>
+                    <label class="text-xs font-bold text-slate-700 block mb-1">اسم المستخدم:</label>
+                    <input type="text" id="authUsername" required placeholder="اسم المستخدم..." class="w-full dc-input rounded-xl px-3.5 py-2.5 text-xs">
+                </div>
+
+                <div>
+                    <label class="text-xs font-bold text-slate-700 block mb-1">كلمة المرور:</label>
+                    <input type="password" id="authPassword" required placeholder="••••••••" class="w-full dc-input rounded-xl px-3.5 py-2.5 text-xs">
+                </div>
+
+                <div class="flex items-center justify-between text-xs pt-1">
+                    <label class="flex items-center gap-2 cursor-pointer text-slate-600">
+                        <input type="checkbox" id="rememberMe" checked class="rounded border-slate-300 text-blue-600 focus:ring-blue-500">
+                        <span>تذكرني تلقائياً (تعبئة الحفظ)</span>
+                    </label>
+                </div>
+
+                <button type="submit" id="authSubmitBtn" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-xl text-xs shadow-md transition">
+                    دخول المنصة
+                </button>
+            </form>
+
+            <div class="text-center text-xs text-slate-500 pt-2 border-t border-slate-100">
+                <span id="authToggleText">ليس لديك حساب؟</span>
+                <button onclick="toggleAuthMode()" id="authToggleBtn" class="text-blue-600 font-bold mr-1 underline">إنشاء حساب جديد</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Publish Code Modal -->
+    <div id="publishModal" class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm hidden flex items-center justify-center p-4 z-50">
+        <div class="dc-card max-w-xl w-full rounded-3xl p-6 space-y-4 relative">
+            <button onclick="closePublishModal()" class="absolute left-4 top-4 text-slate-400 hover:text-slate-600"><i class="fa-solid fa-xmark text-lg"></i></button>
+
+            <h3 class="text-xl font-black text-slate-900 text-center">نشر كود جديد</h3>
+
+            <div class="space-y-3">
+                <div>
+                    <label class="text-xs font-bold text-slate-700 block mb-1">عنوان الكود / السكريبت:</label>
+                    <input type="text" id="codeTitleInput" placeholder="مثال: دالة جلب البيانات أو بوت اتصالات..." class="w-full dc-input rounded-xl px-3.5 py-2.5 text-xs">
+                </div>
+
+                <div class="grid grid-cols-2 gap-2">
+                    <div>
+                        <label class="text-xs font-bold text-slate-700 block mb-1">لغة البرمجة:</label>
+                        <select id="codeLangSelect" class="w-full dc-input rounded-xl px-3 py-2 text-xs">
+                            <option value="JavaScript">JavaScript / Node.js</option>
+                            <option value="Python">Python</option>
+                            <option value="HTML/CSS">HTML / CSS</option>
+                            <option value="PHP">PHP</option>
+                            <option value="C++">C++</option>
+                            <option value="JSON">JSON / Config</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="text-xs font-bold text-slate-700 block mb-1">الوصف المختصر:</label>
+                        <input type="text" id="codeDescInput" placeholder="وظيفة هذا الكود..." class="w-full dc-input rounded-xl px-3.5 py-2.5 text-xs">
+                    </div>
+                </div>
+
+                <div>
+                    <label class="text-xs font-bold text-slate-700 block mb-1">الكود البرمجي:</label>
+                    <textarea id="codeBodyInput" rows="6" placeholder="// اكتب أو الصق الكود هنا..." class="w-full dc-input rounded-xl p-3 text-xs code-font resize-none"></textarea>
+                </div>
+
+                <button onclick="submitNewCode()" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-xl text-xs shadow-md transition">
+                    نشر الكود على المنصة
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer Copyrights -->
+    <footer class="w-full bg-white border-t border-slate-200 text-center text-xs text-slate-500 py-3 code-font">
+        <p>جميع الحقوق محفوظة © 2026 <strong>Digital Coding</strong> | Developed by TAEHA 🚀</p>
+  </footer>
+                                            <!-- App JavaScript Database & Logic -->
+    <script>
+        let currentUser = null;
+        let isLoginMode = true;
+        let activeFilter = 'ALL';
+
+        window.addEventListener('DOMContentLoaded', () => {
+            initStorage();
+            checkAutoLogin();
+            renderPosts();
+        });
+
+        function initStorage() {
+            if (!localStorage.getItem('dc_users')) {
+                localStorage.setItem('dc_users', JSON.stringify([]));
+            }
+            if (!localStorage.getItem('dc_posts')) {
+                const defaultPosts = [
+                    {
+                        id: 1,
+                        author: "TAEHA_DEV",
+                        title: "دالة جلب البيانات الفورية من السيرفر",
+                        lang: "JavaScript",
+                        desc: "دالة معالجة سريعة تدعم Async/Await وحماية الخطأ.",
+                        code: `async function fetchDigitalData(endpoint) {\n    try {\n        const res = await fetch(endpoint);\n        if (!res.ok) throw new Error("Server Error");\n        return await res.json();\n    } catch (err) {\n        console.error("DC Error:", err);\n    }\n}`,
+                        date: "2026-10-08"
+                    }
+                ];
+                localStorage.setItem('dc_posts', JSON.stringify(defaultPosts));
+            }
+        }
+
+        function checkAutoLogin() {
+            const savedUser = localStorage.getItem('dc_session');
+            if (savedUser) {
+                currentUser = JSON.parse(savedUser);
+                updateNavbarUI();
+            } else {
+                const remembered = localStorage.getItem('dc_remembered');
+                if (remembered) {
+                    const data = JSON.parse(remembered);
+                    document.getElementById('authUsername').value = data.username || '';
+                    document.getElementById('authPassword').value = atob(data.hash || '');
+                }
+            }
+        }
+
+        function handleAuth(e) {
+            e.preventDefault();
+            const username = document.getElementById('authUsername').value.trim();
+            const password = document.getElementById('authPassword').value.trim();
+            const remember = document.getElementById('rememberMe').checked;
+
+            if (!username || !password) return alert('يرجى ملء كافة الحقول!');
+
+            let users = JSON.parse(localStorage.getItem('dc_users') || '[]');
+            const passHash = btoa(password);
+
+            if (isLoginMode) {
+                const user = users.find(u => u.username === username && u.passHash === passHash);
+                if (user || (username === "taeha" && password === "123456")) {
+                    currentUser = { username: username };
+                    localStorage.setItem('dc_session', JSON.stringify(currentUser));
+                    
+                    if (remember) {
+                        localStorage.setItem('dc_remembered', JSON.stringify({ username, hash: passHash }));
+                    }
+
+                    alert(`أهلاً بك مجدداً يا ${username} في Digital Coding!`);
+                    closeAuthModal();
+                    updateNavbarUI();
+                } else {
+                    alert('اسم المستخدم أو كلمة المرور غير صحيحة!');
+                }
+            } else {
+                if (users.some(u => u.username === username)) {
+                    return alert('اسم المستخدم مسجل بالفعل، اختر اسماً آخر!');
+                }
+
+                users.push({ username, passHash });
+                localStorage.setItem('dc_users', JSON.stringify(users));
+
+                currentUser = { username: username };
+                localStorage.setItem('dc_session', JSON.stringify(currentUser));
+
+                if (remember) {
+                    localStorage.setItem('dc_remembered', JSON.stringify({ username, hash: passHash }));
+                }
+
+                alert('تم إنشاء الحساب بنجاح وتم تسجيل دخولك!');
+                closeAuthModal();
+                updateNavbarUI();
+            }
+        }
+
+        function logout() {
+            localStorage.removeItem('dc_session');
+            currentUser = null;
+            updateNavbarUI();
+            alert('تم تسجيل الخروج بنجاح!');
+        }
+
+        function updateNavbarUI() {
+            const area = document.getElementById('navUserArea');
+            if (currentUser) {
+                area.innerHTML = `
+                    <div class="flex items-center gap-2">
+                        <span class="text-xs font-bold text-slate-700 bg-slate-100 border border-slate-200 px-3 py-1.5 rounded-xl">
+                            <i class="fa-solid fa-user text-blue-600 ml-1"></i> ${currentUser.username}
+                        </span>
+                        <button onclick="logout()" class="text-xs text-red-500 hover:text-red-700 font-bold px-2 py-1">
+                            <i class="fa-solid fa-right-from-bracket"></i>
+                        </button>
+                    </div>
+                `;
+            } else {
+                area.innerHTML = `
+                    <button onclick="showAuthModal('login')" class="text-xs font-bold bg-slate-100 hover:bg-slate-200 text-slate-700 px-4 py-2 rounded-xl border border-slate-300 transition">
+                        تسجيل الدخول
+                    </button>
+                    <button onclick="showAuthModal('register')" class="text-xs font-bold bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-xl shadow-sm transition">
+                        حساب جديد
+                    </button>
+                `;
+            }
+        }
+
+        function renderPosts() {
+            const searchQuery = document.getElementById('searchInput').value.toLowerCase();
+            let posts = JSON.parse(localStorage.getItem('dc_posts') || '[]');
+            const container = document.getElementById('postsFeed');
+
+            let filtered = posts.filter(post => {
+                const matchLang = activeFilter === 'ALL' || post.lang === activeFilter;
+                const matchSearch = post.title.toLowerCase().includes(searchQuery) || 
+                                    post.desc.toLowerCase().includes(searchQuery) ||
+                                    post.lang.toLowerCase().includes(searchQuery);
+                return matchLang && matchSearch;
+            });
+
+            if (filtered.length === 0) {
+                container.innerHTML = `<div class="dc-card rounded-2xl p-8 text-center text-slate-400 text-xs">لا توجد أكواد مطابقة للبحث حالياً.</div>`;
+                return;
+            }
+
+            container.innerHTML = filtered.map(post => `
+                <div class="dc-card rounded-2xl p-5 space-y-3">
+                    <div class="flex justify-between items-start">
+                        <div>
+                            <span class="text-[10px] font-bold bg-blue-50 text-blue-600 border border-blue-200 px-2 py-0.5 rounded-full code-font">${post.lang}</span>
+                            <h3 class="text-base font-bold text-slate-900 mt-1">${escapeHtml(post.title)}</h3>
+                            <p class="text-xs text-slate-500">${escapeHtml(post.desc)}</p>
+                        </div>
+                        <span class="text-[10px] text-slate-400 code-font">ناشر: ${post.author}</span>
+                    </div>
+
+                    <div class="relative">
+                        <pre class="code-block p-4 text-xs overflow-x-auto code-font dir-ltr text-left"><code>${escapeHtml(post.code)}</code></pre>
+                        <button onclick="copyCode(this)" class="absolute top-2 left-2 bg-slate-800/80 hover:bg-slate-700 text-white text-[10px] font-bold px-2.5 py-1 rounded-lg border border-slate-600 transition">
+                            <i class="fa-solid fa-copy ml-1"></i> نسخ
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function submitNewCode() {
+            if (!currentUser) {
+                alert('يجب عليك تسجيل الدخول أولاً لنشر الأكواد!');
+                return showAuthModal('login');
+            }
+
+            const title = document.getElementById('codeTitleInput').value.trim();
+            const lang = document.getElementById('codeLangSelect').value;
+            const desc = document.getElementById('codeDescInput').value.trim();
+            const code = document.getElementById('codeBodyInput').value.trim();
+
+            if (!title || !code) return alert('يرجى ملء العنوان والكود البرمجي!');
+
+            let posts = JSON.parse(localStorage.getItem('dc_posts') || '[]');
+            posts.unshift({
+                id: Date.now(),
+                author: currentUser.username,
+                title, lang, desc, code,
+                date: new Date().toISOString().split('T')[0]
+            });
+
+            localStorage.setItem('dc_posts', JSON.stringify(posts));
+
+            document.getElementById('codeTitleInput').value = '';
+            document.getElementById('codeDescInput').value = '';
+            document.getElementById('codeBodyInput').value = '';
+
+            closePublishModal();
+            renderPosts();
+            alert('تم نشر الكود بنجاح على منصة Digital Coding!');
+        }
+
+        function copyCode(btn) {
+            const codeText = btn.parentElement.querySelector('code').innerText;
+            navigator.clipboard.writeText(codeText);
+            btn.innerText = "تم النسخ!";
+            setTimeout(() => { btn.innerHTML = `<i class="fa-solid fa-copy ml-1"></i> نسخ`; }, 2000);
+        }
+
+        function filterLang(lang) {
+            activeFilter = lang;
+            renderPosts();
+        }
+
+        function showAuthModal(mode) {
+            isLoginMode = mode === 'login';
+            updateAuthModalUI();
+            document.getElementById('authModal').classList.remove('hidden');
+        }
+
+        function closeAuthModal() { 
+            document.getElementById('authModal').classList.add('hidden'); 
+        }
+
+        function toggleAuthMode() {
+            isLoginMode = !isLoginMode;
+            updateAuthModalUI();
+        }
+
+        function updateAuthModalUI() {
+            document.getElementById('authTitle').innerText = isLoginMode ? 'تسجيل الدخول' : 'إنشاء حساب جديد';
+            document.getElementById('authSubtitle').innerText = isLoginMode ? 'أدخل بياناتك للمتابعة في Digital Coding' : 'سجل حسابك لحفظ ونشر سكريبتاتك';
+            document.getElementById('authSubmitBtn').innerText = isLoginMode ? 'دخول المنصة' : 'إنشاء الحساب الآن';
+            document.getElementById('authToggleText').innerText = isLoginMode ? 'ليس لديك حساب؟' : 'لديك حساب بالفعل؟';
+            document.getElementById('authToggleBtn').innerText = isLoginMode ? 'إنشاء حساب جديد' : 'تسجيل الدخول';
+        }
+
+        function openPublishModal() { 
+            if (!currentUser) {
+                alert('يجب تسجيل الدخول أولاً لنشر الأكواد!');
+                return showAuthModal('login');
+            }
+            document.getElementById('publishModal').classList.remove('hidden'); 
+        }
+
+        function closePublishModal() { 
+            document.getElementById('publishModal').classList.add('hidden'); 
+        }
+
+        function escapeHtml(str) {
+            return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+        }
+    </script>
+</body>
+</html>
